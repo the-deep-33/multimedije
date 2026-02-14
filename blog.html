@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — NMAP</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== PAGE HERO ===== */
+    .page-hero {
+      padding: 10rem 2.5rem 5rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 50%;
+      height: 100%;
+      background: radial-gradient(ellipse 70% 80% at 80% 50%, rgba(200,241,53,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-hero-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .page-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      letter-spacing: 0.02em;
+      line-height: 0.9;
+    }
+
+    .page-hero h1 span { color: var(--accent); }
+
+    .page-hero-meta {
+      text-align: right;
+    }
+
+    .page-hero-meta p {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .post-count {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      padding: 1.5rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      overflow-x: auto;
+    }
+
+    .filter-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-right: 0.5rem;
+    }
+
+    .filter-btn {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(200,241,53,0.05);
+    }
+
+    /* ===== FEATURED POST ===== */
+    .blog-main {
+      padding: 4rem 2.5rem 6rem;
+    }
+
+    .blog-main-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+    }
+
+    .featured-post {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      margin-bottom: 4rem;
+      background: var(--surface);
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .featured-post:hover { border-color: var(--accent); }
+
+    .featured-img {
+      background: var(--surface2);
+      min-height: 420px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 2rem;
+    }
+
+    .featured-img-bg {
+      position: absolute;
+      inset: 0;
+      background: 
+        linear-gradient(135deg, rgba(200,241,53,0.08) 0%, transparent 50%),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255,255,255,0.01) 0px,
+          rgba(255,255,255,0.01) 1px,
+          transparent 1px,
+          transparent 16px
+        ),
+        var(--surface2);
+    }
+
+    .featured-nedelja {
+      position: relative;
+      z-index: 2;
+      font-family: var(--font-display);
+      font-size: 7rem;
+      color: rgba(200,241,53,0.15);
+      line-height: 1;
+    }
+
+    .featured-content {
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .post-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .featured-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .featured-excerpt {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+    }
+
+    .post-meta span { color: var(--text-muted); }
+
+    /* ===== POSTS GRID ===== */
+    .posts-section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .post-card {
+      background: var(--bg);
+      padding: 2rem;
+      transition: background 0.3s;
+      position: relative;
+    }
+
+    .post-card:hover { background: var(--surface); }
+
+    .post-card-img {
+      height: 180px;
+      background: var(--surface2);
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .post-card-img-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 4rem;
+      color: var(--text-dim);
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .post-card:hover .post-card-img-inner {
+      color: var(--accent);
+      transform: scale(1.05);
+    }
+
+    .post-card-week {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .post-card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+      transition: color 0.2s;
+    }
+
+    .post-card:hover .post-card-title { color: var(--accent); }
+
+    .post-card-excerpt {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    .post-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .read-more {
+      color: var(--accent);
+      transition: gap 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .post-card:hover .read-more { gap: 0.6rem; }
+
+    /* ===== NEWSLETTER ===== */
+    .newsletter {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 3.5rem;
+      margin-top: 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .newsletter h3 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: 0.03em;
+    }
+
+    .newsletter h3 span { color: var(--accent); }
+
+    .newsletter p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    .newsletter-form {
+      display: flex;
+      gap: 0;
+      flex: 1;
+      min-width: 280px;
+      max-width: 420px;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-right: none;
+      padding: 0.85rem 1.25rem;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .newsletter-input:focus { border-color: var(--accent); }
+    .newsletter-input::placeholder { color: var(--text-dim); }
+
+    .newsletter-submit {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .newsletter-submit:hover { background: #d4ff50; }
+
+    @media (max-width: 1024px) {
+      .posts-grid { grid-template-columns: repeat(2, 1fr); }
+      .featured-post { grid-template-columns: 1fr; }
+      .featured-img { min-height: 250px; }
+    }
+
+    @media (max-width: 768px) {
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      .page-hero-inner { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+      .page-hero-meta { text-align: left; }
+      .filter-bar { padding: 1.25rem 1.5rem; }
+      .blog-main { padding: 2.5rem 1.5rem 4rem; }
+      .posts-grid { grid-template-columns: 1fr; }
+      .newsletter { padding: 2rem; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav" id="navbar">
+    <a href="index.html" class="nav-logo">NMAP</a>
+    <div class="nav-hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Program</a></li>
+      <li><a href="blog.html" class="active">Blog</a></li>
+      <li><a href="promo.html">Promo</a></li>
+      <li><a href="index.html#start" class="nav-cta">Počni besplatno</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <div>
+        <div class="section-tag">Svi tekstovi</div>
+        <h1>NMAP BLOG</h1>
+      </div>
+      <div class="page-hero-meta">
+      </div>
+    </div>
+  </header>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" data-filter="all">Sve</button>
+    <button class="filter-btn" data-filter="trening">Trening</button>
+    <button class="filter-btn" data-filter="ishrana">Ishrana</button>
+    <button class="filter-btn" data-filter="oporavak">Oporavak</button>
+    <button class="filter-btn" data-filter="psihologija">Psihologija</button>
+    <button class="filter-btn" data-filter="nedelja">Nedeljni plan</button>
+  </div>
+
+  <!-- BLOG MAIN -->
+  <main class="blog-main">
+    <div class="blog-main-inner">
+
+      <!-- POSTS GRID -->
+      <div class="posts-section-label">Svi tekstovi</div>
+
+      <div class="posts-grid" id="postsGrid">
+
+        <a href="blog-post.html" class="post-card" data-category="ishrana">
+          <div class="post-card-img">
+            <div class="post-card-img-inner">🥗</div>
+          </div>
+          <div class="post-card-week">Ishrana · Osnove</div>
+          <div class="post-card-title">Proteini, ugljeni hidrati, masti — šta ti zapravo treba?</div>
+          <p class="post-card-excerpt">Bez dijeta, bez zabrana. Naučno zasnovan pristup ishrani koji se može pratiti bez stresa.</p>
+          <div class="post-card-footer">
+            <span>12. jan · 5 min</span>
+            <span class="read-more">Čitaj <span>→</span></span>
+          </div>
+        </a>
+
+        <a href="blog-post.html" class="post-card" data-category="trening">
+          <div class="post-card-img">
+            <div class="post-card-img-inner">💪</div>
+          </div>
+          <div class="post-card-week">Trening · Forma</div>
+          <div class="post-card-title">Čučanj bez bola u kolenima — kako pravilno?</div>
+          <p class="post-card-excerpt">Najčešće greške kod čučnja i kako ih ispraviti. Video + tekst objašnjenje za sve nivoe.</p>
+          <div class="post-card-footer">
+            <span>10. jan · 4 min</span>
+            <span class="read-more">Čitaj <span>→</span></span>
+          </div>
+        </a>
+
+        <a href="blog-post.html" class="post-card" data-category="oporavak">
+          <div class="post-card-img">
+            <div class="post-card-img-inner">😴</div>
+          </div>
+          <div class="post-card-week">Oporavak · San</div>
+          <div class="post-card-title">Zašto san gradi mišiće više od suplementa</div>
+          <p class="post-card-excerpt">Tokom sna telo popravlja, gradi i priprema. Ako preskačeš spavanje, preskačeš napredak.</p>
+          <div class="post-card-footer">
+            <span>8. jan · 7 min</span>
+            <span class="read-more">Čitaj <span>→</span></span>
+          </div>
+        </a>
+
+        <a href="blog-post.html" class="post-card" data-category="psihologija">
+          <div class="post-card-img">
+            <div class="post-card-img-inner">🧠</div>
+          </div>
+          <div class="post-card-week">Psihologija · Motivacija</div>
+          <div class="post-card-title">Motivacija je laž — ovo je ono što zaista funkcioniše</div>
+          <p class="post-card-excerpt">Čekanje da se osetiš motivisano je recept za neuspeh. Govorimo o tome šta zaista pokreće akciju.</p>
+          <div class="post-card-footer">
+            <span>5. jan · 5 min</span>
+            <span class="read-more">Čitaj <span>→</span></span>
+          </div>
+        </a>
+
+        <a href="blog-post.html" class="post-card" data-category="nedelja">
+          <div class="post-card-img">
+            <div class="post-card-img-inner">📅</div>
+          </div>
+          <div class="post-card-week">Nedeljni plan · Nedelja 2</div>
+          <div class="post-card-title">Plan treninga za nedelju 2 — povećavamo opterećenje</div>
+          <p class="post-card-excerpt">Svi treninzi, opisi vežbi i ciljevi za drugu nedelju programa. Šta očekivati i šta izmeriti.</p>
+          <div class="post-card-footer">
+            <span>3. jan · 3 min</span>
+            <span class="read-more">Čitaj <span>→</span></span>
+          </div>
+        </a>
+
+        <a href="blog-post.html" class="post-card" data-category="trening">
+          <div class="post-card-img">
+            <div class="post-card-img-inner">🏃</div>
+          </div>
+          <div class="post-card-week">Trening · Kardio</div>
+          <div class="post-card-title">HIIT vs. steady state kardio — kada koristiti šta?</div>
+          <p class="post-card-excerpt">Oba pristupa imaju svoje mesto u programu. Objašnjavamo kada, zašto i kako ih kombinovati.</p>
+          <div class="post-card-footer">
+            <span>1. jan · 6 min</span>
+            <span class="read-more">Čitaj <span>→</span></span>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- FEATURED POST -->
+      <div class="posts-section-label">Istaknuti tekst</div>
+      <a href="blog-post.html" class="featured-post">
+        <div class="featured-img">
+          <div class="featured-img-bg"></div>
+          <div class="featured-nedelja">N1</div>
+        </div>
+        <div class="featured-content">
+          <div class="post-badge">★ Istaknuto · Nedelja 1</div>
+          <h2 class="featured-title">Zašto prva nedelja nije o treningu, nego o navici</h2>
+          <div class="post-meta">
+            <span>15. januar 2026</span>
+            <span>·</span>
+            <span>6 min čitanja</span>
+          </div>
+          <p class="featured-excerpt">Većina programa počinje previše agresivno i zbog toga propadne do kraja prve nedelje. Mi radimo suprotno — gradimo naviku pre nego što gradimo snagu.</p>
+          <span class="btn btn-primary" style="align-self: flex-start;">Čitaj tekst →</span>
+        </div>
+      </a>
+
+      <!-- NEWSLETTER -->
+      <div class="newsletter">
+        <div>
+          <h3>OSTANI U<br><span>TOKU</span></h3>
+          <p>Novi tekstovi, planovi treninga i saveti — direktno u inbox.</p>
+        </div>
+        <form class="newsletter-form" onsubmit="handleSubscribe(event)">
+          <input type="email" class="newsletter-input" placeholder="tvoj@email.com" required>
+          <button type="submit" class="newsletter-submit">Prijavi se</button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">NMAP</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Program</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="promo.html">Promo</a></li>
+      </ul>
+      <div class="footer-copy">© 2026 NMAP · Multimedijalni projekat</div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Mobile menu
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+    // Filter
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.post-card').forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Newsletter
+    function handleSubscribe(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.textContent = '✓ Prijavljeno!';
+      btn.style.background = '#333';
+      btn.style.color = 'var(--accent)';
+    }
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.style.opacity = '1';
+          el.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.post-card').forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity 0.5s ease ${i * 0.07}s, transform 0.5s ease ${i * 0.07}s`;
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>

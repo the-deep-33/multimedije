@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promo Materijali — NMAP</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== PAGE HERO ===== */
+    .page-hero {
+      padding: 10rem 2.5rem 5rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      background: 
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(200,241,53,0.05) 0%, transparent 70%),
+        var(--bg);
+    }
+
+    .page-hero-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .page-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      letter-spacing: 0.02em;
+      line-height: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .page-hero h1 span { color: var(--accent); }
+
+    .page-hero p {
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    /* ===== MEDIA SECTION ===== */
+    .promo-main {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 5rem 2.5rem 6rem;
+    }
+
+    .promo-section {
+      margin-bottom: 5rem;
+    }
+
+    .promo-section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .promo-section-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .promo-section-title span { color: var(--accent); }
+
+    .promo-section-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* ===== VIDEO GRID ===== */
+    .video-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .video-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      cursor: pointer;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .video-thumb {
+      position: relative;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+
+    .video-card:first-child .video-thumb { padding-bottom: 56.25%; }
+    .video-card:not(:first-child) .video-thumb { padding-bottom: 56.25%; }
+
+    .video-thumb-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(200,241,53,0.05) 0%, transparent 60%);
+    }
+
+    .video-play-btn {
+      width: 60px;
+      height: 60px;
+      background: rgba(200,241,53,0.15);
+      border: 1px solid rgba(200,241,53,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.3s;
+      position: relative;
+      z-index: 2;
+    }
+
+    .video-card:hover .video-play-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .video-card:hover .video-play-btn .play-icon { filter: invert(1); }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 18px solid var(--accent);
+      margin-left: 3px;
+      transition: filter 0.3s;
+    }
+
+    .video-duration {
+      position: absolute;
+      bottom: 0.75rem;
+      right: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      background: rgba(0,0,0,0.8);
+      color: var(--text-muted);
+      padding: 0.25rem 0.5rem;
+    }
+
+    .video-overlay-text {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-family: var(--font-display);
+      font-size: 4rem;
+      color: rgba(200,241,53,0.06);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .video-info {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .video-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .video-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+      transition: color 0.2s;
+    }
+
+    .video-card:hover .video-title { color: var(--accent); }
+
+    .video-meta {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .video-grid-right {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ===== POSTER GRID ===== */
+    .poster-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .poster-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .poster-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .poster-img {
+      aspect-ratio: 9/16;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .poster-1 { background: linear-gradient(135deg, #111 0%, #1a1a0a 100%); }
+    .poster-2 { background: linear-gradient(135deg, #0a0a0a 0%, #0d1a0d 100%); }
+    .poster-3 { background: linear-gradient(135deg, #110a0a 0%, #1a0a0a 100%); }
+    .poster-4 { background: linear-gradient(135deg, #080808 0%, #111118 100%); }
+
+    .poster-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.25rem;
+    }
+
+    .poster-logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    .poster-big-num {
+      font-family: var(--font-display);
+      font-size: 4.5rem;
+      line-height: 0.9;
+      color: var(--accent);
+      opacity: 0.15;
+      align-self: center;
+    }
+
+    .poster-bottom {}
+
+    .poster-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.25rem;
+    }
+
+    .poster-headline {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .poster-info {
+      padding: 1rem 1.25rem;
+    }
+
+    .poster-info-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .poster-info-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .poster-download {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+
+    .poster-card:hover .poster-download {
+      background: rgba(200,241,53,0.05);
+      color: var(--accent);
+    }
+
+    /* ===== ASSETS TABLE ===== */
+    .assets-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .assets-table th {
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0.75rem 1.25rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .assets-table td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .assets-table tr:last-child td { border-bottom: none; }
+
+    .assets-table tr:hover td { background: var(--surface); }
+
+    .asset-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--surface2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      margin-right: 0.75rem;
+      vertical-align: middle;
+    }
+
+    .asset-name {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .asset-type {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .asset-size {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .asset-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-done .status-dot { background: var(--accent); }
+    .status-done { color: var(--accent); }
+
+    .status-progress .status-dot { background: #FFB800; animation: pulse 2s infinite; }
+    .status-progress { color: #FFB800; }
+
+    .status-pending .status-dot { background: var(--text-dim); }
+    .status-pending { color: var(--text-dim); }
+
+    .asset-download-btn {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .asset-download-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .asset-download-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ===== BRAND COLORS ===== */
+    .brand-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .color-swatches {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .color-swatch {}
+
+    .swatch-block {
+      height: 80px;
+      margin-bottom: 0.75rem;
+    }
+
+    .swatch-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .swatch-value {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .font-showcase {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      background: var(--surface);
+    }
+
+    .font-showcase-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .font-showcase-item:last-child { border-bottom: none; }
+
+    .font-sample {
+      margin-bottom: 0.4rem;
+    }
+
+    .font-info {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 1024px) {
+      .video-grid { grid-template-columns: 1fr; }
+      .poster-grid { grid-template-columns: repeat(2, 1fr); }
+      .brand-section { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      .promo-main { padding: 3rem 1.5rem 4rem; }
+      .poster-grid { grid-template-columns: repeat(2, 1fr); }
+      .color-swatches { grid-template-columns: repeat(2, 1fr); }
+      .assets-table td:nth-child(3),
+      .assets-table th:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav" id="navbar">
+    <a href="index.html" class="nav-logo">NMAP</a>
+    <div class="nav-hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Program</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="promo.html" class="active">Promo</a></li>
+      <li><a href="index.html#start" class="nav-cta">Počni besplatno</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <div class="section-tag" style="justify-content:center; margin-bottom:1.5rem;">Materijali projekta</div>
+      <h1>PROMO<br><span>MATERIJALI</span></h1>
+      <p>Sve vizualne i medijske materijale za NMAP program — videi, posteri, brand assets i prateća dokumentacija.</p>
+    </div>
+  </header>
+
+  <main class="promo-main">
+
+    <!-- VIDEO SECTION -->
+    <section class="promo-section">
+      <div class="promo-section-header">
+        <div>
+          <div class="section-tag">01 / Video sadržaj</div>
+          <h2 class="promo-section-title">VIDEO<br><span>MATERIJALI</span></h2>
+        </div>
+        <div class="promo-section-meta">
+          3 videa · Ukupno ~12 min
+        </div>
+      </div>
+
+      <div class="video-grid">
+        <!-- FEATURED VIDEO -->
+        <div class="video-card">
+          <div class="video-thumb" style="padding-bottom:56.25%; position:relative;">
+            <div class="video-thumb-inner" style="position:absolute; inset:0;">
+              <div class="video-overlay-text">F8</div>
+              <div class="video-play-btn"><div class="play-icon"></div></div>
+              <div class="video-duration">4:32</div>
+            </div>
+          </div>
+          <div class="video-info">
+            <div class="video-tag">★ Uvodni video · Program overview</div>
+            <div class="video-title">NMAP - Šta te čeka u 8 nedelja</div>
+            <div class="video-meta">4 min 32 sek · MP4 · 1080p</div>
+          </div>
+        </div>
+
+        <div class="video-grid-right">
+          <div class="video-card">
+            <div class="video-thumb" style="padding-bottom:56.25%; position:relative;">
+              <div class="video-thumb-inner" style="position:absolute; inset:0;">
+                <div class="video-overlay-text" style="font-size:2.5rem;">N1</div>
+                <div class="video-play-btn" style="width:48px; height:48px;"><div class="play-icon"></div></div>
+                <div class="video-duration">3:15</div>
+              </div>
+            </div>
+            <div class="video-info">
+              <div class="video-tag">Nedelja 1 · Trening demonstracija</div>
+              <div class="video-title">Pravilna forma: osnove za početnike</div>
+              <div class="video-meta">3 min 15 sek · MP4 · 1080p</div>
+            </div>
+          </div>
+
+          <div class="video-card">
+            <div class="video-thumb" style="padding-bottom:56.25%; position:relative;">
+              <div class="video-thumb-inner" style="position:absolute; inset:0;">
+                <div class="video-overlay-text" style="font-size:2.5rem;">N2</div>
+                <div class="video-play-btn" style="width:48px; height:48px;"><div class="play-icon"></div></div>
+                <div class="video-duration">5:10</div>
+              </div>
+            </div>
+            <div class="video-info">
+              <div class="video-tag">Nedelja 2 · Trening demonstracija</div>
+              <div class="video-title">Progresija opterećenja — nedelja 2</div>
+              <div class="video-meta">5 min 10 sek · MP4 · 1080p</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POSTERS SECTION -->
+    <section class="promo-section">
+      <div class="promo-section-header">
+        <div>
+          <div class="section-tag">02 / Vizualni materijali</div>
+          <h2 class="promo-section-title">POSTERI &<br><span>GRAFIKE</span></h2>
+        </div>
+        <div class="promo-section-meta">
+          4 postera · A3 / 9:16 format
+        </div>
+      </div>
+
+      <div class="poster-grid">
+
+        <div class="poster-card">
+          <div class="poster-img poster-1">
+            <div class="poster-content">
+              <div class="poster-logo">NMAP</div>
+              <div class="poster-big-num">8</div>
+              <div class="poster-bottom">
+                <div class="poster-label">Trajanje</div>
+                <div class="poster-headline">8<br>NEDELJA</div>
+              </div>
+            </div>
+          </div>
+          <div class="poster-info">
+            <div class="poster-info-label">Poster 01</div>
+            <div class="poster-info-name">Uvodni / opšti promo</div>
+          </div>
+          <div class="poster-download">
+            <span>PNG · A3</span>
+            <span>↓ Preuzmi</span>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-img poster-2">
+            <div class="poster-content">
+              <div class="poster-logo">NMAP</div>
+              <div class="poster-big-num">3×</div>
+              <div class="poster-bottom">
+                <div class="poster-label">Frekvencija</div>
+                <div class="poster-headline">3× NED<br>ELJNO</div>
+              </div>
+            </div>
+          </div>
+          <div class="poster-info">
+            <div class="poster-info-label">Poster 02</div>
+            <div class="poster-info-name">Trening frekvencija</div>
+          </div>
+          <div class="poster-download">
+            <span>PNG · A3</span>
+            <span>↓ Preuzmi</span>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-img poster-3">
+            <div class="poster-content">
+              <div class="poster-logo">NMAP</div>
+              <div class="poster-big-num">45'</div>
+              <div class="poster-bottom">
+                <div class="poster-label">Vreme</div>
+                <div class="poster-headline">45<br>MINUTA</div>
+              </div>
+            </div>
+          </div>
+          <div class="poster-info">
+            <div class="poster-info-label">Poster 03</div>
+            <div class="poster-info-name">Trajanje treninga</div>
+          </div>
+          <div class="poster-download">
+            <span>PNG · A3</span>
+            <span>↓ Preuzmi</span>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-img poster-4">
+            <div class="poster-content">
+              <div class="poster-logo">NMAP</div>
+              <div class="poster-big-num">0€</div>
+              <div class="poster-bottom">
+                <div class="poster-label">Cena opreme</div>
+                <div class="poster-headline">BESPL<br>ATNO</div>
+              </div>
+            </div>
+          </div>
+          <div class="poster-info">
+            <div class="poster-info-label">Poster 04</div>
+            <div class="poster-info-name">Bez opreme / besplatno</div>
+          </div>
+          <div class="poster-download">
+            <span>PNG · A3</span>
+            <span>↓ Preuzmi</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ASSETS TABLE -->
+    <section class="promo-section">
+      <div class="promo-section-header">
+        <div>
+          <div class="section-tag">03 / Svi fajlovi</div>
+          <h2 class="promo-section-title">KOMPLETAN<br><span>ASSET PACK</span></h2>
+        </div>
+        <div class="promo-section-meta">
+          12 fajlova · Razni formati
+        </div>
+      </div>
+
+      <table class="assets-table">
+        <thead>
+          <tr>
+            <th>Naziv</th>
+            <th>Tip</th>
+            <th>Veličina</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="asset-icon">🎬</span>
+              <span class="asset-name">NMAP-intro-video.mp4</span>
+            </td>
+            <td><span class="asset-type">MP4 · 1080p</span></td>
+            <td><span class="asset-size">248 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">🎬</span>
+              <span class="asset-name">NMAP-nedelja1-trening.mp4</span>
+            </td>
+            <td><span class="asset-type">MP4 · 1080p</span></td>
+            <td><span class="asset-size">156 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">🎬</span>
+              <span class="asset-name">NMAP-nedelja2-trening.mp4</span>
+            </td>
+            <td><span class="asset-type">MP4 · 1080p</span></td>
+            <td><span class="asset-size">192 MB</span></td>
+            <td><span class="asset-status status-progress"><span class="status-dot"></span>U izradi</span></td>
+            <td><button class="asset-download-btn" disabled>↓ Uskoro</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">🖼️</span>
+              <span class="asset-name">poster-01-uvodni.png</span>
+            </td>
+            <td><span class="asset-type">PNG · 3508×4961</span></td>
+            <td><span class="asset-size">4.2 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">🖼️</span>
+              <span class="asset-name">poster-02-trening.png</span>
+            </td>
+            <td><span class="asset-type">PNG · 3508×4961</span></td>
+            <td><span class="asset-size">3.9 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">🖼️</span>
+              <span class="asset-name">poster-03-vreme.png</span>
+            </td>
+            <td><span class="asset-type">PNG · 3508×4961</span></td>
+            <td><span class="asset-size">4.0 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">🖼️</span>
+              <span class="asset-name">poster-04-besplatno.png</span>
+            </td>
+            <td><span class="asset-type">PNG · 3508×4961</span></td>
+            <td><span class="asset-size">3.7 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">📄</span>
+              <span class="asset-name">NMAP-logo-pack.zip</span>
+            </td>
+            <td><span class="asset-type">ZIP · SVG + PNG</span></td>
+            <td><span class="asset-size">1.1 MB</span></td>
+            <td><span class="asset-status status-done"><span class="status-dot"></span>Završeno</span></td>
+            <td><button class="asset-download-btn">↓ Preuzmi</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">📋</span>
+              <span class="asset-name">brand-guidelines.pdf</span>
+            </td>
+            <td><span class="asset-type">PDF</span></td>
+            <td><span class="asset-size">2.4 MB</span></td>
+            <td><span class="asset-status status-progress"><span class="status-dot"></span>U izradi</span></td>
+            <td><button class="asset-download-btn" disabled>↓ Uskoro</button></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="asset-icon">📱</span>
+              <span class="asset-name">social-media-templates.zip</span>
+            </td>
+            <td><span class="asset-type">ZIP · PSD + PNG</span></td>
+            <td><span class="asset-size">18 MB</span></td>
+            <td><span class="asset-status status-pending"><span class="status-dot"></span>Planirano</span></td>
+            <td><button class="asset-download-btn" disabled>↓ Uskoro</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- BRAND SECTION -->
+    <section class="promo-section">
+      <div class="promo-section-header">
+        <div>
+          <div class="section-tag">04 / Vizualni identitet</div>
+          <h2 class="promo-section-title">BRAND<br><span>SMERNICE</span></h2>
+        </div>
+      </div>
+
+      <div class="brand-section">
+        <div>
+          <div style="margin-bottom: 1.5rem;">
+            <div class="section-tag" style="margin-bottom:1rem;">Boje</div>
+            <div class="color-swatches">
+              <div class="color-swatch">
+                <div class="swatch-block" style="background:#C8F135;"></div>
+                <div class="swatch-label">Akcentna</div>
+                <div class="swatch-value">#C8F135</div>
+              </div>
+              <div class="color-swatch">
+                <div class="swatch-block" style="background:#0a0a0a; border:1px solid #222;"></div>
+                <div class="swatch-label">Pozadina</div>
+                <div class="swatch-value">#0A0A0A</div>
+              </div>
+              <div class="color-swatch">
+                <div class="swatch-block" style="background:#f0f0f0;"></div>
+                <div class="swatch-label">Tekst</div>
+                <div class="swatch-value">#F0F0F0</div>
+              </div>
+              <div class="color-swatch">
+                <div class="swatch-block" style="background:#FF4D1C;"></div>
+                <div class="swatch-label">Sekundarna</div>
+                <div class="swatch-value">#FF4D1C</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-tag" style="margin-bottom:1rem;">Tipografija</div>
+          <div class="font-showcase">
+            <div class="font-showcase-item">
+              <div class="font-sample" style="font-family:'Bebas Neue',sans-serif; font-size:2rem; line-height:1;">NMAP</div>
+              <div class="font-info">Bebas Neue · Naslovi</div>
+            </div>
+            <div class="font-showcase-item">
+              <div class="font-sample" style="font-family:'DM Sans',sans-serif; font-size:0.9rem; line-height:1.6; color:#aaa;">Telo teksta u DM Sans fontu. Lagan, čitljiv, moderan.</div>
+              <div class="font-info">DM Sans · Telo teksta</div>
+            </div>
+            <div class="font-showcase-item">
+              <div class="font-sample" style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#555; letter-spacing:0.1em; text-transform:uppercase;">TAG · LABEL · META</div>
+              <div class="font-info">DM Mono · Oznake i meta</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">NMAP</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Program</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="promo.html">Promo</a></li>
+      </ul>
+      <div class="footer-copy">© 2026 NMAP · Multimedijalni projekat</div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Mobile menu
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.style.opacity = '1';
+          el.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.video-card, .poster-card').forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
+      observer.observe(el);
+    });
+
+    // Download button feedback
+    document.querySelectorAll('.asset-download-btn:not(:disabled)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const original = btn.textContent;
+        btn.textContent = '✓ Preuzeto';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color = 'var(--accent)';
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    });
+  </script>
+
+</body>
+</html>

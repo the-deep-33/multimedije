@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NMAP — Pravilna tehnika u teretani</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 80px; }
+    .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 70% 50%, rgba(200,241,53,0.06) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,77,28,0.05) 0%, transparent 60%), var(--bg); }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%); }
+    .hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 3rem; max-width: var(--max-w); margin: 0 auto; padding: 0 2.5rem; }
+    .hero-top { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .hero-week-badge { display: inline-flex; align-items: center; gap: 0.75rem; border: 1px solid var(--border); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2rem; animation: fadeIn 0.6s ease forwards; }
+    .hero-week-badge .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+    .hero-title { font-family: var(--font-display); font-size: clamp(4rem, 8vw, 7.5rem); line-height: 0.9; letter-spacing: 0.02em; margin-bottom: 2rem; animation: fadeUp 0.7s ease 0.1s both; }
+    .hero-title .accent { color: var(--accent); }
+    .hero-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 440px; line-height: 1.75; margin-bottom: 2.5rem; animation: fadeUp 0.7s ease 0.2s both; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp 0.7s ease 0.3s both; }
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); animation: fadeUp 0.7s ease 0.4s both; }
+    .hero-stat { padding: 1.5rem; background: var(--surface); position: relative; overflow: hidden; }
+    .hero-stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform 0.3s; }
+    .hero-stat:hover::before { transform: scaleX(1); }
+    .hero-stat-num { font-family: var(--font-display); font-size: 3rem; line-height: 1; color: var(--accent); margin-bottom: 0.25rem; }
+    .hero-stat-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); animation: fadeIn 1s ease 1s both; }
+    .hero-scroll-line { width: 1px; height: 40px; background: linear-gradient(var(--text-dim), transparent); animation: slideDown 1.5s ease infinite; }
+    @keyframes slideDown { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+    .program { padding: 8rem 0; }
+    .program-header { text-align: center; margin-bottom: 5rem; }
+    .program-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: 0.03em; margin-bottom: 1rem; }
+    .program-sub { color: var(--text-muted); max-width: 500px; margin: 0 auto; }
+    .weeks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .week-card { background: var(--bg); padding: 2rem 1.75rem; transition: background 0.3s; position: relative; overflow: hidden; cursor: default; }
+    .week-card:hover { background: var(--surface); }
+    .week-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform 0.3s; }
+    .week-card:hover::after { transform: scaleX(1); }
+    .week-num { font-family: var(--font-display); font-size: 3.5rem; line-height: 1; color: var(--text-dim); margin-bottom: 1rem; transition: color 0.3s; }
+    .week-card:hover .week-num { color: var(--accent); }
+    .week-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+    .week-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .week-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    .principles { padding: 8rem 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .principles-inner { display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem; align-items: start; }
+    .principles-left { position: sticky; top: 120px; }
+    .principles-title { font-family: var(--font-display); font-size: clamp(2.5rem, 4vw, 4rem); line-height: 0.95; margin-bottom: 1.5rem; }
+    .principles-title span { color: var(--accent); }
+    .principles-body { color: var(--text-muted); line-height: 1.75; margin-bottom: 2rem; }
+    .principle-item { display: flex; gap: 1.5rem; padding: 1.75rem 0; border-bottom: 1px solid var(--border); }
+    .principle-item:first-child { border-top: 1px solid var(--border); }
+    .principle-num { font-family: var(--font-display); font-size: 2rem; color: var(--text-dim); min-width: 3rem; line-height: 1; }
+    .principle-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .principle-content p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    .offerings { padding: 8rem 0; }
+    .offerings-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: 0.03em; text-align: center; margin-bottom: 4rem; }
+    .offerings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .offering-card { border: 1px solid var(--border); padding: 2.5rem 2rem; background: var(--surface); transition: border-color 0.3s, transform 0.3s; position: relative; }
+    .offering-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .offering-icon { width: 48px; height: 48px; background: rgba(200,241,53,0.08); border: 1px solid rgba(200,241,53,0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.25rem; }
+    .offering-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .offering-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.65; }
+    .cta-strip { background: var(--accent); padding: 5rem 2.5rem; text-align: center; position: relative; overflow: hidden; }
+    .cta-strip::before { content: 'NMAP'; position: absolute; font-family: var(--font-display); font-size: 20vw; color: rgba(0,0,0,0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none; }
+    .cta-strip h2 { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); color: var(--bg); letter-spacing: 0.03em; margin-bottom: 1rem; position: relative; }
+    .cta-strip p { color: rgba(10,10,10,0.6); max-width: 450px; margin: 0 auto 2rem; position: relative; }
+    .btn-dark { background: var(--bg); color: var(--accent); clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.85rem 2.5rem; display: inline-block; font-weight: 500; transition: all 0.2s; position: relative; }
+    .btn-dark:hover { background: #111; transform: translateY(-2px); }
+
+    /* ===== HERO VIDEO 9:16 ===== */
+    .hero-video-wrap { position: relative; animation: fadeUp 0.7s ease 0.35s both; display: flex; flex-direction: column; align-items: center; }
+    .hero-video-player { position: relative; width: 100%; max-width: 300px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
+    .hero-video-player video { width: 100%; display: block; aspect-ratio: 9/16; object-fit: cover; }
+    .hero-video-placeholder { aspect-ratio: 9/16; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.25rem; background: linear-gradient(135deg, rgba(200,241,53,0.04) 0%, transparent 50%), repeating-linear-gradient(-45deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 20px), var(--surface2); cursor: pointer; position: relative; }
+    .video-big-play { width: 72px; height: 72px; border: 2px solid rgba(200,241,53,0.4); background: rgba(200,241,53,0.08); display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+    .video-big-play::after { content: ''; width: 0; height: 0; border-top: 13px solid transparent; border-bottom: 13px solid transparent; border-left: 22px solid var(--accent); margin-left: 4px; }
+    .hero-video-placeholder:hover .video-big-play { background: var(--accent); border-color: var(--accent); }
+    .hero-video-placeholder:hover .video-big-play::after { border-left-color: var(--bg); }
+    .video-placeholder-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+    .video-placeholder-title { font-family: var(--font-display); font-size: 1.4rem; letter-spacing: 0.05em; color: var(--text); }
+    .video-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-top: none; width: 100%; max-width: 300px; }
+    .video-bar-title { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .video-bar-tag { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+
+
+
+    @media (max-width: 1024px) { .weeks-grid { grid-template-columns: repeat(2, 1fr); } .offerings-grid { grid-template-columns: repeat(2, 1fr); } .principles-inner { grid-template-columns: 1fr; gap: 3rem; } .principles-left { position: static; } .hero-top { grid-template-columns: 1fr; } .hero-stats { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 768px) { .hero-top { grid-template-columns: 1fr; } .hero-stats { grid-template-columns: repeat(2, 1fr); } .weeks-grid { grid-template-columns: 1fr; } .offerings-grid { grid-template-columns: 1fr; } .hero-video-player { max-width: 260px; } .video-bar { max-width: 260px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="navbar">
+    <a href="index.html" class="nav-logo">NMAP</a>
+    <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">Program</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="promo.html">Promo</a></li>
+      <li><a href="#start" class="nav-cta">Počni besplatno</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div class="hero-content">
+          <div class="hero-week-badge"><span class="dot"></span>8-nedeljni program · Pravilna tehnika</div>
+          <h1 class="hero-title">RADI<br><span class="accent">PRAVILNO</span></h1>
+          <p class="hero-desc">Program koji te uči kako se vežbe u teretani rade ispravno — pravilna forma, bezbedna tehnika i progresivno opterećenje kroz 8 nedelja.</p>
+          <div class="hero-actions">
+            <a href="#start" class="btn btn-primary">Kreni od nedelje 1 →</a>
+            <a href="#program" class="btn btn-outline">Šta me čeka?</a>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+          <p style="font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim);">Šta pokrivamo</p>
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border:1px solid var(--border); background:var(--surface);"><span style="color:var(--accent);">→</span><span style="font-size:0.875rem; color:var(--text-muted);">Složene vežbe — čučanj, mrtvo dizanje, bench press</span></div>
+            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border:1px solid var(--border); background:var(--surface);"><span style="color:var(--accent);">→</span><span style="font-size:0.875rem; color:var(--text-muted);">Izolacione vežbe i pravilna aktivacija mišića</span></div>
+            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border:1px solid var(--border); background:var(--surface);"><span style="color:var(--accent);">→</span><span style="font-size:0.875rem; color:var(--text-muted);">Najčešće greške i kako ih ispraviti</span></div>
+            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border:1px solid var(--border); background:var(--surface);"><span style="color:var(--accent);">→</span><span style="font-size:0.875rem; color:var(--text-muted);">Zagrevanje, mobilnost i prevencija povreda</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-video-wrap">
+        <div class="hero-video-player" id="heroVideoWrap">
+          <div class="hero-video-placeholder" id="heroPlaceholder" onclick="playHeroVideo()">
+            <div class="video-big-play"></div>
+            <div class="video-placeholder-title">UVODNI VIDEO — NMAP</div>
+            <div class="video-placeholder-label">Klikni da pokreneš · 4 min 32 sek</div>
+          </div>
+        </div>
+        <div class="video-bar">
+          <span class="video-bar-title">Uvod u program — tehnika i forma</span>
+          <span class="video-bar-tag">● Ovde ubaci tvoj video</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-label">Nedelja programa</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">40+</div><div class="hero-stat-label">Vežbi sa uputstvima</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">3×</div><div class="hero-stat-label">Trening nedeljno</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Loše forme</div></div>
+      </div>
+    </div>
+    <div class="hero-scroll"><div class="hero-scroll-line"></div>Scroll</div>
+  </section>
+
+  <section class="program" id="program">
+    <div class="container">
+      <div class="program-header">
+        <div class="section-tag">Struktura programa</div>
+        <h2 class="program-title">8 NEDELJA.<br>JEDAN CILJ.</h2>
+        <p class="program-sub">Svaka nedelja ima jasno definisan fokus, progresivno opterećenje i konkretne ciljeve koje ćeš postizati.</p>
+      </div>
+      <div class="weeks-grid">
+        <div class="week-card"><div class="week-num">01—02</div><div class="week-label">Faza 1</div><div class="week-title">Osnove tehnike</div><div class="week-desc">Savladavamo obrasce kretanja. Čučanj, hip hinge, potisak — učimo pravilnu formu pre nego što dodamo težinu.</div></div>
+        <div class="week-card"><div class="week-num">03—04</div><div class="week-label">Faza 2</div><div class="week-title">Aktivacija & kontrola</div><div class="week-desc">Fokus na veza mozak–mišić. Pravilna aktivacija, tempo ponavljanja i kontrolisano spuštanje težine.</div></div>
+        <div class="week-card"><div class="week-num">05—06</div><div class="week-label">Faza 3</div><div class="week-title">Progresija</div><div class="week-desc">Dodajemo opterećenje na uspostavljenu formu. Složene vežbe, varijacije i rad na slabim tačkama.</div></div>
+        <div class="week-card"><div class="week-num">07—08</div><div class="week-label">Faza 4</div><div class="week-title">Konsolidacija</div><div class="week-desc">Spajamo sve faze. Testiramo maksimume sa ispravnom formom i postavljamo temelje za nastavak.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="principles">
+    <div class="container">
+      <div class="principles-inner">
+        <div class="principles-left">
+          <div class="section-tag">Filozofija</div>
+          <h2 class="principles-title">ZAŠTO<br><span>FORMA</span><br>JESTE SVE</h2>
+          <p class="principles-body">Svaka povreda u teretani ima istu priču: pretežak teg, loša forma, previše žurbe. Mi idemo suprotnim smerom — tehnika uvek ide ispred ega.</p>
+          <a href="blog.html" class="btn btn-outline">Čitaj blog →</a>
+        </div>
+        <div class="principles-list">
+          <div class="principle-item"><div class="principle-num">01</div><div class="principle-content"><h4>Tehnika pre težine</h4><p>Teg koji možeš kontrolisati uvek bije teg koji samo bacaš. Forma se gradi polako — jednom kada je uspostavljena, težina dolazi prirodno.</p></div></div>
+          <div class="principle-item"><div class="principle-num">02</div><div class="principle-content"><h4>Veza mozak–mišić</h4><p>Pravilna aktivacija znači da tačno znaš koji mišić treba da radi. Bez nje, primarnu ulogu preuzimaju pogrešni mišići — i dolaze povrede.</p></div></div>
+          <div class="principle-item"><div class="principle-num">03</div><div class="principle-content"><h4>Ekscentrična faza je pola posla</h4><p>Kontrolisano spuštanje težine gradi više snage i mase od brzog podizanja. Većina početnika preskače ovaj deo — mi ne.</p></div></div>
+          <div class="principle-item"><div class="principle-num">04</div><div class="principle-content"><h4>Mobilnost kao prioritet</h4><p>Bez dovoljnog obima pokreta ne možeš ući u pravilnu poziciju. Zagrevanje i mobilnost nisu opcioni — oni su osnova svakog treninga.</p></div></div>
+          <div class="principle-item"><div class="principle-num">05</div><div class="principle-content"><h4>Progresivno opterećenje na ispravnoj formi</h4><p>Povećavamo težinu samo kada je forma savladana. Nije usporavanje — to je jedini način da napredak bude dugotrajan i bezbedan.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="offerings" id="start">
+    <div class="container">
+      <div class="section-tag" style="display:flex; justify-content:center; margin-bottom:1rem;">Šta dobijam</div>
+      <h2 class="offerings-title">SVE ŠTO TI<br>TREBA</h2>
+      <div class="offerings-grid">
+        <div class="offering-card"><div class="offering-icon">🎥</div><h3>Video demonstracije svake vežbe</h3><p>Svaka vežba ima video sa detaljnim objašnjenjem forme, uobičajenim greškama i kako ih ispraviti.</p></div>
+        <div class="offering-card"><div class="offering-icon">📋</div><h3>Nedeljni planovi sa tehničkim fokusom</h3><p>Svaka nedelja ima jasno definisan tehnički cilj — ne samo koji seti i ponavljanja, već i šta tačno treba da osetiš.</p></div>
+        <div class="offering-card"><div class="offering-icon">⚠️</div><h3>Najčešće greške — i kako ih rešiti</h3><p>Za svaku složenu vežbu imamo listu grešaka koje viđamo u teretani — sa konkretnim korekcijama.</p></div>
+        <div class="offering-card"><div class="offering-icon">🔥</div><h3>Zagrevanje i mobilnost</h3><p>Svaki trening počinje aktivacijom koja te priprema za pravilno izvođenje — ne samo podignutom temperaturom, već i obimom pokreta.</p></div>
+        <div class="offering-card"><div class="offering-icon">📊</div><h3>Tracker forme i opterećenja</h3><p>Beležiš napredak i po kilogramima i po kvalitetu forme. Jedino pravo merilo napretka je i jedno i drugo.</p></div>
+        <div class="offering-card"><div class="offering-icon">🔄</div><h3>Regresije i progresije za svaku vežbu</h3><p>Nije ti još čučanj sa šipkom? Ima lakša varijanta. Previše lako? Ima teža. Program radi za svaki nivo.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <p>8 nedelja. Svaka vežba rađena ispravno. Temelje koje ćeš nositi ceo život.</p>
+    <a href="blog.html" class="btn-dark">Idi na Blog →</a>
+  </section>
+
+<footer>
+    <div class="footer-inner">
+      <div class="footer-logo">NMAP</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Program</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="promo.html">Promo</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
+
+    function playHeroVideo() {
+      document.getElementById('heroVideoWrap').innerHTML =
+        '<video autoplay controls controlsList="nofullscreen" style="width:100%;display:block;aspect-ratio:9/16;object-fit:cover;"><source src="0214.mp4" type="video/mp4"></video>';
+    }
+
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => { if (el.isIntersecting) { el.target.style.opacity = '1'; el.target.style.transform = 'translateY(0)'; } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.week-card, .offering-card, .principle-item').forEach(el => {
+      el.style.opacity = '0'; el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
