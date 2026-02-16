@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan treninga za nedelju 2 - NMAP Blog</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .post-header { padding: 9rem 2.5rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .post-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 50% 80% at 0% 50%, rgba(200,241,53,0.04) 0%, transparent 60%), radial-gradient(ellipse 30% 50% at 100% 0%, rgba(255,77,28,0.03) 0%, transparent 60%); }
+    .post-header-inner { max-width: 800px; margin: 0 auto; position: relative; }
+    .post-breadcrumb { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2rem; }
+    .post-breadcrumb a { color: var(--text-muted); transition: color 0.2s; }
+    .post-breadcrumb a:hover { color: var(--accent); }
+    .post-breadcrumb span { color: var(--text-dim); }
+    .post-category-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bg); background: var(--accent); padding: 0.3rem 0.75rem; margin-bottom: 1.5rem; }
+    .post-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 0.02em; line-height: 1; margin-bottom: 1.5rem; }
+    .post-header-meta { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .post-header-meta .divider { color: var(--border); }
+    .post-layout { display: grid; grid-template-columns: 1fr 300px; gap: 5rem; max-width: var(--max-w); margin: 0 auto; padding: 4rem 2.5rem 6rem; align-items: start; }
+    .post-cover { background: var(--surface); border: 1px solid var(--border); height: 320px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 8rem; color: var(--text-dim); margin-bottom: 3rem; position: relative; overflow: hidden; letter-spacing: 0.05em; }
+    .post-cover-label { position: absolute; bottom: 1rem; left: 1.5rem; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+    .post-content { line-height: 1.8; }
+    .post-content h2 { font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: 0.04em; margin: 2.5rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .post-content h3 { font-size: 1rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; }
+    .post-content p { color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .post-content strong { color: var(--text); font-weight: 600; }
+    .post-content em { color: var(--accent); font-style: normal; }
+    .post-content ul, .post-content ol { color: var(--text-muted); padding-left: 1.5rem; margin-bottom: 1.25rem; }
+    .post-content li { margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .callout { border-left: 3px solid var(--accent); background: rgba(200,241,53,0.04); padding: 1.25rem 1.5rem; margin: 2rem 0; }
+    .callout-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .callout p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+    .week-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: 0.875rem; }
+    .week-table th { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .week-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-muted); }
+    .week-table .day-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.75rem; letter-spacing: 0.08em; }
+    .post-share { display: flex; align-items: center; gap: 0.75rem; padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem; flex-wrap: wrap; }
+    .post-share-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+    .share-btn { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); background: transparent; color: var(--text-muted); padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s; }
+    .share-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-top: 2rem; }
+    .post-nav-item { background: var(--bg); padding: 1.5rem; transition: background 0.2s; }
+    .post-nav-item:hover { background: var(--surface); }
+    .post-nav-item.next { text-align: right; }
+    .post-nav-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.4rem; }
+    .post-nav-title { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
+    .sidebar { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 2rem; }
+    .sidebar-section { border: 1px solid var(--border); padding: 1.25rem; background: var(--surface); }
+    .sidebar-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .toc-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+    .toc-list a { font-size: 0.83rem; color: var(--text-muted); padding: 0.4rem 0.6rem; display: block; border-left: 2px solid transparent; transition: all 0.2s; }
+    .toc-list a:hover, .toc-list a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,241,53,0.04); }
+    .related-post { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
+    .related-post:last-child { border-bottom: none; }
+    .related-post:hover { opacity: 0.7; }
+    .related-post-icon { font-size: 1.25rem; flex-shrink: 0; }
+    .related-post-cat { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.2rem; }
+    .related-post-title { font-size: 0.83rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
+    .progress-widget { border: 1px solid var(--border); padding: 1.25rem; background: var(--surface); }
+    .progress-weeks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 0.75rem; }
+    .progress-week { height: 8px; background: var(--border); transition: background 0.3s; }
+    .progress-week.done { background: var(--accent); }
+    .progress-week.current { background: rgba(200,241,53,0.4); }
+    .progress-text { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-top: 0.75rem; }
+    .progress-text strong { color: var(--accent); }
+    @media (max-width: 1024px) { .post-layout { grid-template-columns: 1fr; gap: 3rem; } .sidebar { position: static; } }
+    @media (max-width: 768px) { .post-header { padding: 7rem 1.5rem 3rem; } .post-layout { padding: 2.5rem 1.5rem 4rem; } .post-nav { grid-template-columns: 1fr; } .post-cover { height: 240px; font-size: 5rem; } }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled" id="navbar">
+    <a href="index.html" class="nav-logo">NMAP</a>
+    <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Program</a></li>
+      <li><a href="blog.html" class="active">Blog</a></li>
+      <li><a href="promo.html">Promo</a></li>
+      <li><a href="index.html#start" class="nav-cta">Počni besplatno</a></li>
+    </ul>
+  </nav>
+
+  <header class="post-header">
+    <div class="post-header-inner">
+      <div class="post-breadcrumb">
+        <a href="index.html">Početna</a>
+        <span>/</span>
+        <a href="blog.html">Blog</a>
+        <span>/</span>
+        <span>Nedeljni plan</span>
+      </div>
+      <div class="post-category-badge">Nedeljni plan - Nedelja 2</div>
+      <h1 class="post-title">PLAN TRENINGA
+ZA NEDELJU 2
+POVECAVAMO OPTEREDENJE</h1>
+      <div class="post-header-meta">
+        <span>3. januar 2025</span>
+        <span class="divider">|</span>
+        <span>3 min čitanja</span>
+        <span class="divider">|</span>
+        <span>Nedelja 2 programa</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="post-layout">
+    <article>
+      <div class="post-cover">
+        N2
+        <span class="post-cover-label">Nedelja 2 - Aktivacija i kontrola</span>
+      </div>
+      <div class="post-content">
+        <p>Ako si zavrsio sva tri treninga u prvoj nedelji, napravili smo temelj. Druga nedelja uvodi blago vece opterecenje i počinje da gradi svesnost o tehnici.</p>
+
+        <h2 id="fokus">FOKUS NEDELJE</h2>
+
+        <p>Nedelja 2 je o <strong>vezi mozak-misic</strong>. Povecavamo teg neznatno, ali fokus ide na to da osećaš koji misic radi. To je vestina koju vecina nikad ne razvije i koja pravi razliku izmedju onih koji napreduju i onih koji samo dizu tegove.</p>
+
+        <div class="callout">
+          <div class="callout-label">Tehnicka instrukcija za ovu nedelju</div>
+          <p>Pre svakog seta, 3 sekunde se fokusiraj na misic koji ćeš raditi. Tokom vežbe, pokusaj da osećaš kontrakciju a ne samo da zavrsis pokret.</p>
+        </div>
+
+        <h2 id="treninzi">TRENINZI A I B</h2>
+
+        <table class="week-table">
+          <thead><tr><th>Dan</th><th>Trening</th><th>Fokus vezba</th><th>Seti x Reps</th></tr></thead>
+          <tbody>
+            <tr><td class="day-num">PON</td><td>Trening A - Noge i core</td><td>Čučanj, plank</td><td>3 x 10</td></tr>
+            <tr><td class="day-num">SRE</td><td>Aktivan odmor</td><td>Šetnja ili lako biciklo</td><td>30 min</td></tr>
+            <tr><td class="day-num">PET</td><td>Trening B - Gornji deo</td><td>Bench press, red</td><td>3 x 10</td></tr>
+            <tr><td class="day-num">NED</td><td>Odmor</td><td>Po osećaju</td><td>-</td></tr>
+          </tbody>
+        </table>
+
+        <p>Teg treba da bude težak dovoljno da su poslednja 2 do 3 ponavljanja naporna, ali da forma ne pati. Ako forma pati, smanjujes teg.</p>
+
+        <h2 id="ciljevi">ŠTA MERITI</h2>
+
+        <p>Fizicke promene jos uvek nisu vidljive i to je normalno. Ono sto treba pratiti ove nedelje:</p>
+
+        <ul>
+          <li><strong>Prisustvo</strong> - da li si odradio sva tri treninga</li>
+          <li><strong>Forma</strong> - da li si mogao da zadržis ispravan polozaj tokom celog seta</li>
+          <li><strong>Energija posle treninga</strong> - treba da budes umoran ali ne iscrpljen</li>
+        </ul>
+
+        <p>Trecoj nedelji počinjemo sa pravim progresivnim opterecenjem. Ova nedelja gradi bazu za to.</p>
+      </div>
+      <div class="post-share">
+        <span class="post-share-label">Podeli:</span>
+        <button class="share-btn" onclick="copyLink()">Kopiraj link</button>
+      </div>
+      <nav class="post-nav">
+        <a href="blog.html" class="post-nav-item">
+          <div class="post-nav-label">Nazad</div>
+          <div class="post-nav-title">Svi tekstovi</div>
+        </a>
+        <a href="post-hiit.html" class="post-nav-item next">
+          <div class="post-nav-label">Sledeći</div>
+          <div class="post-nav-title">HIIT vs steady state kardio</div>
+        </a>
+      </nav>
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sadržaj</div>
+        <ul class="toc-list" id="toc">
+          <li><a href="#fokus">Fokus nedelje</a></li>
+          <li><a href="#treninzi">Treninzi A i B</a></li>
+          <li><a href="#ciljevi">Šta meriti</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tvoj napredak</div>
+        <div class="progress-widget">
+          <div class="progress-weeks">
+            <div class="progress-week done"></div>
+            <div class="progress-week current"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+          </div>
+          <div class="progress-text">Nedelja <strong>2</strong> od <strong>8</strong></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Slični tekstovi</div>
+        <a href="post-navika.html" class="related-post">
+          <div class="related-post-icon">🧠</div>
+          <div class="related-post-info">
+            <div class="related-post-cat">Psihologija</div>
+            <div class="related-post-title">Zašto prva nedelja nije o treningu</div>
+          </div>
+        </a>
+        <a href="post-čučanj.html" class="related-post">
+          <div class="related-post-icon">💪</div>
+          <div class="related-post-info">
+            <div class="related-post-cat">Trening</div>
+            <div class="related-post-title">Čučanj bez bola u kolenima</div>
+          </div>
+        </a>
+        <a href="post-hiit.html" class="related-post">
+          <div class="related-post-icon">🏃</div>
+          <div class="related-post-info">
+            <div class="related-post-cat">Trening</div>
+            <div class="related-post-title">HIIT vs steady state kardio</div>
+          </div>
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">NMAP</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Program</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="promo.html">Promo</a></li>
+      </ul>
+      <div class="footer-copy">2025 NMAP - Multimedijalni projekat</div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => { if (window.scrollY > 40) nav.classList.add('scrolled'); });
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+    const sections = document.querySelectorAll('.post-content h2[id], .post-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    const tocObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id); });
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    sections.forEach(s => tocObserver.observe(s));
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelectorAll('.share-btn')[0];
+        btn.textContent = 'Kopirano!';
+        setTimeout(() => { btn.textContent = 'Kopiraj link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

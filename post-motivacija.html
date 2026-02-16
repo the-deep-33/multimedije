@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motivacija je laž - NMAP Blog</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .post-header { padding: 9rem 2.5rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .post-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 50% 80% at 0% 50%, rgba(200,241,53,0.04) 0%, transparent 60%), radial-gradient(ellipse 30% 50% at 100% 0%, rgba(255,77,28,0.03) 0%, transparent 60%); }
+    .post-header-inner { max-width: 800px; margin: 0 auto; position: relative; }
+    .post-breadcrumb { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2rem; }
+    .post-breadcrumb a { color: var(--text-muted); transition: color 0.2s; }
+    .post-breadcrumb a:hover { color: var(--accent); }
+    .post-breadcrumb span { color: var(--text-dim); }
+    .post-category-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bg); background: var(--accent); padding: 0.3rem 0.75rem; margin-bottom: 1.5rem; }
+    .post-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 0.02em; line-height: 1; margin-bottom: 1.5rem; }
+    .post-header-meta { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .post-header-meta .divider { color: var(--border); }
+    .post-layout { display: grid; grid-template-columns: 1fr 300px; gap: 5rem; max-width: var(--max-w); margin: 0 auto; padding: 4rem 2.5rem 6rem; align-items: start; }
+    .post-cover { background: var(--surface); border: 1px solid var(--border); height: 320px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 8rem; color: var(--text-dim); margin-bottom: 3rem; position: relative; overflow: hidden; letter-spacing: 0.05em; }
+    .post-cover-label { position: absolute; bottom: 1rem; left: 1.5rem; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+    .post-content { line-height: 1.8; }
+    .post-content h2 { font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: 0.04em; margin: 2.5rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .post-content h3 { font-size: 1rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; }
+    .post-content p { color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .post-content strong { color: var(--text); font-weight: 600; }
+    .post-content em { color: var(--accent); font-style: normal; }
+    .post-content ul, .post-content ol { color: var(--text-muted); padding-left: 1.5rem; margin-bottom: 1.25rem; }
+    .post-content li { margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .callout { border-left: 3px solid var(--accent); background: rgba(200,241,53,0.04); padding: 1.25rem 1.5rem; margin: 2rem 0; }
+    .callout-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .callout p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+    .week-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: 0.875rem; }
+    .week-table th { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .week-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-muted); }
+    .week-table .day-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.75rem; letter-spacing: 0.08em; }
+    .post-share { display: flex; align-items: center; gap: 0.75rem; padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem; flex-wrap: wrap; }
+    .post-share-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+    .share-btn { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); background: transparent; color: var(--text-muted); padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s; }
+    .share-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-top: 2rem; }
+    .post-nav-item { background: var(--bg); padding: 1.5rem; transition: background 0.2s; }
+    .post-nav-item:hover { background: var(--surface); }
+    .post-nav-item.next { text-align: right; }
+    .post-nav-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.4rem; }
+    .post-nav-title { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
+    .sidebar { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 2rem; }
+    .sidebar-section { border: 1px solid var(--border); padding: 1.25rem; background: var(--surface); }
+    .sidebar-label { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .toc-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+    .toc-list a { font-size: 0.83rem; color: var(--text-muted); padding: 0.4rem 0.6rem; display: block; border-left: 2px solid transparent; transition: all 0.2s; }
+    .toc-list a:hover, .toc-list a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,241,53,0.04); }
+    .related-post { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
+    .related-post:last-child { border-bottom: none; }
+    .related-post:hover { opacity: 0.7; }
+    .related-post-icon { font-size: 1.25rem; flex-shrink: 0; }
+    .related-post-cat { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.2rem; }
+    .related-post-title { font-size: 0.83rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
+    .progress-widget { border: 1px solid var(--border); padding: 1.25rem; background: var(--surface); }
+    .progress-weeks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 0.75rem; }
+    .progress-week { height: 8px; background: var(--border); transition: background 0.3s; }
+    .progress-week.done { background: var(--accent); }
+    .progress-week.current { background: rgba(200,241,53,0.4); }
+    .progress-text { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-top: 0.75rem; }
+    .progress-text strong { color: var(--accent); }
+    @media (max-width: 1024px) { .post-layout { grid-template-columns: 1fr; gap: 3rem; } .sidebar { position: static; } }
+    @media (max-width: 768px) { .post-header { padding: 7rem 1.5rem 3rem; } .post-layout { padding: 2.5rem 1.5rem 4rem; } .post-nav { grid-template-columns: 1fr; } .post-cover { height: 240px; font-size: 5rem; } }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled" id="navbar">
+    <a href="index.html" class="nav-logo">NMAP</a>
+    <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Program</a></li>
+      <li><a href="blog.html" class="active">Blog</a></li>
+      <li><a href="promo.html">Promo</a></li>
+      <li><a href="index.html#start" class="nav-cta">Počni besplatno</a></li>
+    </ul>
+  </nav>
+
+  <header class="post-header">
+    <div class="post-header-inner">
+      <div class="post-breadcrumb">
+        <a href="index.html">Početna</a>
+        <span>/</span>
+        <a href="blog.html">Blog</a>
+        <span>/</span>
+        <span>Psihologija</span>
+      </div>
+      <div class="post-category-badge">Psihologija - Motivacija</div>
+      <h1 class="post-title">MOTIVACIJA
+JE
+LAŽ</h1>
+      <div class="post-header-meta">
+        <span>5. januar 2025</span>
+        <span class="divider">|</span>
+        <span>5 min čitanja</span>
+        <span class="divider">|</span>
+        <span>Psihologija treninga</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="post-layout">
+    <article>
+      <div class="post-cover">
+        🧠
+        <span class="post-cover-label">Psihologija - Disciplina i sistemi</span>
+      </div>
+      <div class="post-content">
+        <p>Čekanje da se osećaš motivisano je recept za neuspeh. Motivacija dolazi i odlazi. Disciplina je ono sto ostaje kada motivacija ode.</p>
+
+        <h2 id="problem">PROBLEM SA MOTIVACIJOM</h2>
+
+        <p>Motivacija je emocija, ne karakterna osobina. Emocije su nestabilne i zavise od sna, stresa, hrane i stotinu drugih faktora van nase kontrole. <strong>Sistem koji zavisi od emocija je krhak sistem.</strong></p>
+
+        <p>Vecina ljudi ceka da se oseti motivisano pre nego sto krene da trenira. To je obrnuta logika. Akcija dolazi pre motivacije, ne posle. Pocnes, i motivacija sledi iz postignutog napretka.</p>
+
+        <div class="callout">
+          <div class="callout-label">Istina o disciplini</div>
+          <p>Disciplinovani ljudi ne osećaju vise motivacije od ostalih. Jednostavno su napravili sisteme koji ne zavise od motivacije.</p>
+        </div>
+
+        <h2 id="sistemi">SISTEMI UMESTO CILJEVA</h2>
+
+        <p>Cilj je "izgraditi misice." Sistem je "trecinu u 18h, ponedeljak sreda petak." Cilj opisuje rezultat. Sistem opisuje proces.</p>
+
+        <p>Kad se fokusiras na sistem, svaki zavrsen trening je pobeda. Kad se fokusiras na cilj, svaki trening je samo korak ka neem sto jos nije dostignuto. Prva opcija gradi pozitivnu petlju, druga te drži u stalnom deficitu.</p>
+
+        <ul>
+          <li>Odredi tačno vreme treninga unapred</li>
+          <li>Pripre opremu noc pre</li>
+          <li>Smanji treshold za početak (obuj patike i idi, ostalo se desi)</li>
+          <li>Prati prisustvo, ne rezultate</li>
+        </ul>
+
+        <h2 id="identitet">IDENTITET KAO OSNOVA</h2>
+
+        <p>Najjaci motivator nije zeleni cilj ili nagrada. To je identitet. Kada poćeš da se vidis kao <em>neko ko trenira</em>, svaki trening potvrduje tu sliku. Preskakanje treninga postaje konflikt sa identitetom, ne samo propustena obaveza.</p>
+
+        <p>Ovo se gradi polako, kroz ponavljanje. Zato je prva nedelja toliko važna: ne zbog fizickih adaptacija vec zbog pocetka identitetske promene.</p>
+      </div>
+      <div class="post-share">
+        <span class="post-share-label">Podeli:</span>
+        <button class="share-btn" onclick="copyLink()">Kopiraj link</button>
+      </div>
+      <nav class="post-nav">
+        <a href="blog.html" class="post-nav-item">
+          <div class="post-nav-label">Nazad</div>
+          <div class="post-nav-title">Svi tekstovi</div>
+        </a>
+        <a href="post-nedelja2.html" class="post-nav-item next">
+          <div class="post-nav-label">Sledeći</div>
+          <div class="post-nav-title">Plan treninga za nedelju 2</div>
+        </a>
+      </nav>
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Sadržaj</div>
+        <ul class="toc-list" id="toc">
+          <li><a href="#problem">Problem sa motivacijom</a></li>
+          <li><a href="#sistemi">Sistemi umesto ciljeva</a></li>
+          <li><a href="#identitet">Identitet kao osnova</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tvoj napredak</div>
+        <div class="progress-widget">
+          <div class="progress-weeks">
+            <div class="progress-week current"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+            <div class="progress-week"></div>
+          </div>
+          <div class="progress-text">Nedelja <strong>1</strong> od <strong>8</strong></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Slični tekstovi</div>
+        <a href="post-navika.html" class="related-post">
+          <div class="related-post-icon">🧠</div>
+          <div class="related-post-info">
+            <div class="related-post-cat">Psihologija</div>
+            <div class="related-post-title">Zašto prva nedelja nije o treningu</div>
+          </div>
+        </a>
+        <a href="post-san.html" class="related-post">
+          <div class="related-post-icon">😴</div>
+          <div class="related-post-info">
+            <div class="related-post-cat">Oporavak</div>
+            <div class="related-post-title">Zašto san gradi misice</div>
+          </div>
+        </a>
+        <a href="post-nedelja2.html" class="related-post">
+          <div class="related-post-icon">📅</div>
+          <div class="related-post-info">
+            <div class="related-post-cat">Nedeljni plan</div>
+            <div class="related-post-title">Plan treninga za nedelju 2</div>
+          </div>
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">NMAP</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Program</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="promo.html">Promo</a></li>
+      </ul>
+      <div class="footer-copy">2025 NMAP - Multimedijalni projekat</div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => { if (window.scrollY > 40) nav.classList.add('scrolled'); });
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+    const sections = document.querySelectorAll('.post-content h2[id], .post-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    const tocObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id); });
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    sections.forEach(s => tocObserver.observe(s));
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelectorAll('.share-btn')[0];
+        btn.textContent = 'Kopirano!';
+        setTimeout(() => { btn.textContent = 'Kopiraj link'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
